@@ -1,0 +1,35 @@
+import heapq
+
+def a_star(graph, start, goal, h):
+    pq = [(h[start], 0, start, [])]
+    visited = set()
+    while pq:
+        f, g, current, path = heapq.heappop(pq)
+        if current in visited: continue
+        path = path + [current]
+        if current == goal: return path, g
+        visited.add(current)
+        for neighbor, weight in graph.get(current, {}).items():
+            if neighbor not in visited:
+                new_g = g + weight
+                heapq.heappush(pq, (new_g + h[neighbor], new_g, neighbor, path))
+    return None, 0
+
+# --- User Input ---
+graph = {}
+heuristic = {}
+edges = int(input("Enter number of edges: "))
+print("Enter edge as 'Source Destination Weight':")
+for _ in range(edges):
+    u, v, w = input().split()
+    if u not in graph: graph[u] = {}
+    graph[u][v] = int(w)
+
+print("Enter Heuristic values for each node (Node Value):")
+nodes = set(list(graph.keys()) + [v for neighbors in graph.values() for v in neighbors])
+for node in nodes:
+    heuristic[node] = int(input(f"Heuristic for {node}: "))
+
+s, g = input("Enter Start and Goal nodes: ").split()
+path, cost = a_star(graph, s, g, heuristic)
+print(f"Path: {path}, Total Cost: {cost}")
