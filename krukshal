@@ -1,0 +1,82 @@
+class KruskalAlgorithm:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = []
+
+    def add_edge(self, u, v, w):
+        self.graph.append([u, v, w])
+
+    # Find the root of an element (with Path Compression)
+    def find(self, parent, i):
+        if parent[i] == i:
+            return i
+        return self.find(parent, parent[i])
+
+    # Union of two sets by rank
+    def union(self, parent, rank, x, y):
+        root_x = self.find(parent, x)
+        root_y = self.find(parent, y)
+        if rank[root_x] < rank[root_y]:
+            parent[root_x] = root_y
+        elif rank[root_x] > rank[root_y]:
+            parent[root_y] = root_x
+        else:
+            parent[root_y] = root_x
+            rank[root_x] += 1
+
+    def apply_kruskal(self):
+        result = []  # Stores the edges of the MST
+        i, e = 0, 0
+        
+        # Step 1: Sort all edges by weight in non-decreasing order
+        # This is the "Greedy" choice
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+        
+        parent = []
+        rank = []
+        for node in range(self.V):
+            parent.append(node)
+            rank.append(0)
+
+        # Step 2: Iterate through sorted edges
+        while e < self.V - 1 and i < len(self.graph):
+            u, v, w = self.graph[i]
+            i += 1
+            x = self.find(parent, u)
+            y = self.find(parent, v)
+
+            # Step 3: If including this edge doesn't cause a cycle, add it
+            if x != y:
+                e += 1
+                result.append([u, v, w])
+                self.union(parent, rank, x, y)
+
+        return result
+
+# --- User Input Section ---
+def main():
+    try:
+        v_count = int(input("Enter total number of vertices: "))
+        e_count = int(input("Enter total number of edges: "))
+
+        gk = KruskalAlgorithm(v_count)
+        
+        print(f"Enter {e_count} edges in format 'u v w' (using integers for nodes 0 to {v_count-1}):")
+        for _ in range(e_count):
+            u, v, w = map(int, input().split())
+            gk.add_edge(u, v, w)
+
+        mst = gk.apply_kruskal()
+
+        print("\n--- Final Minimal Spanning Tree (Kruskal's) ---")
+        total_weight = 0
+        for u, v, w in mst:
+            print(f"Edge: {u} -- {v} == {w}")
+            total_weight += w
+        print(f"Total MST Weight: {total_weight}")
+
+    except ValueError:
+        print("Error: Please use integers for nodes and weights.")
+
+if __name__ == "__main__":
+    main()
