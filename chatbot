@@ -1,0 +1,18 @@
+def chatbot():
+    knowledge = {
+        "admission": "Admissions are open from June to August.",
+        "fees": "The annual fee for Computer Engineering is 1.2 Lakhs.",
+        "location": "The campus is located in Pune, Maharashtra."
+    }
+    print("AI Bot: Hello! Ask me about Admissions, Fees, or Location. (Type 'exit' to stop)")
+    while True:
+        user_query = input("You: ").lower()
+        if user_query == 'exit': break
+        
+        response = "I am not sure about that. Try asking about Fees or Admissions."
+        for key in knowledge:
+            if key in user_query:
+                response = knowledge[key]
+        print(f"AI Bot: {response}")
+
+chatbot()
