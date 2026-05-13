@@ -1,0 +1,50 @@
+from collections import deque
+
+def bfs_recursive(queue, graph, visited):
+    # Base case: if the queue is empty, recursion ends
+    if not queue:
+        return
+
+    # Dequeue a vertex from the front
+    node = queue.popleft()
+    print(node, end=" ")
+
+    # Get all adjacent vertices of the dequeued vertex
+    # If an adjacent has not been visited, mark it visited and enqueue it
+    for neighbor in graph.get(node, []):
+        if neighbor not in visited:
+            visited.add(neighbor)
+            queue.append(neighbor)
+
+    # Recursive call
+    bfs_recursive(queue, graph, visited)
+
+# --- User Input Section ---
+def main():
+    graph = {}
+    try:
+        e_count = int(input("Enter total number of edges: "))
+        print("Enter each edge as 'u v' (e.g., A B):")
+        
+        for _ in range(e_count):
+            u, v = input().split()
+            # Since it's an undirected graph, add edges both ways
+            if u not in graph: graph[u] = []
+            if v not in graph: graph[v] = []
+            graph[u].append(v)
+            graph[v].append(u)
+
+        start_node = input("Enter the starting node: ")
+
+        print("\nBFS Traversal Path:")
+        # Initial call: queue contains the start node, visited set contains start node
+        visited = {start_node}
+        queue = deque([start_node])
+        bfs_recursive(queue, graph, visited)
+        print()
+
+    except ValueError:
+        print("Invalid input format.")
+
+if __name__ == "__main__":
+    main()
