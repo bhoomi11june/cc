@@ -1,0 +1,71 @@
+import heapq
+
+def prims_algorithm(graph, start_node, v_count):
+    """
+    Implements Prim's algorithm to find the Minimal Spanning Tree (MST).
+    """
+    mst = []
+    visited = {start_node}
+    
+    # Priority Queue stores: (weight, source_node, destination_node)
+    # We initialize it with all edges connected to the start node
+    edges = [(weight, start_node, neighbor) for neighbor, weight in graph[start_node].items()]
+    heapq.heapify(edges)
+
+    print(f"\nStarting Prim's from node: {start_node}")
+
+    while edges and len(visited) < v_count:
+        # Greedy Choice: Always pick the smallest weight edge
+        weight, u, v = heapq.heappop(edges)
+
+        if v not in visited:
+            visited.add(v)
+            mst.append((u, v, weight))
+            print(f"Added Edge: {u} -- {v} (Weight: {weight})")
+
+            # Add new edges from the newly visited node to the Priority Queue
+            for next_neighbor, next_weight in graph.get(v, {}).items():
+                if next_neighbor not in visited:
+                    heapq.heappush(edges, (next_weight, v, next_neighbor))
+
+    return mst
+
+# --- User Input Section ---
+def main():
+    try:
+        v_count = int(input("Enter total number of vertices: "))
+        e_count = int(input("Enter total number of edges: "))
+
+        # Building an Adjacency List
+        graph = {}
+        print(f"Enter {e_count} edges in format 'Source Destination Weight' (e.g., A B 5):")
+        
+        for _ in range(e_count):
+            u, v, w = input().split()
+            w = int(w)
+            
+            # Since it is an undirected graph, add edges both ways
+            if u not in graph: graph[u] = {}
+            if v not in graph: graph[v] = {}
+            graph[u][v] = w
+            graph[v][u] = w
+
+        start_node = input("Enter the starting node for MST: ")
+        
+        mst_result = prims_algorithm(graph, start_node, v_count)
+
+        # Final Output
+        print("\n--- Final Minimal Spanning Tree ---")
+        total_weight = 0
+        for u, v, w in mst_result:
+            print(f"{u} - {v} : {w}")
+            total_weight += w
+        print(f"Total MST Weight: {total_weight}")
+
+    except ValueError:
+        print("Error: Please enter valid integers for weights and counts.")
+    except KeyError:
+        print("Error: Starting node not found in the edge list.")
+
+if __name__ == "__main__":
+    main()
