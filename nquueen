@@ -1,0 +1,56 @@
+def is_safe(board, row, col, n):
+    # Check this column on upper side
+    for i in range(row):
+        if board[i] == col:
+            return False
+
+    # Check upper left diagonal
+    for i, j in zip(range(row-1, -1, -1), range(col-1, -1, -1)):
+        if board[i] == j:
+            return False
+
+    # Check upper right diagonal
+    for i, j in zip(range(row-1, -1, -1), range(col+1, n)):
+        if board[i] == j:
+            return False
+
+    return True
+
+def solve_n_queens(row, n, board, solutions):
+    # Base case: All queens are placed
+    if row == n:
+        solutions.append(list(board))
+        return
+
+    for col in range(n):
+        if is_safe(board, row, col, n):
+            # Place queen
+            board[row] = col
+            # Recur to place rest of the queens
+            solve_n_queens(row + 1, n, board, solutions)
+            # Backtrack: the queen is removed automatically when the loop moves to next col
+            board[row] = -1
+
+def print_board(solutions, n):
+    if not solutions:
+        print("No solution exists.")
+        return
+
+    print(f"\nFound {len(solutions)} solutions. Showing the first one:")
+    for row in range(n):
+        line = ["Q" if solutions[0][row] == col else "." for col in range(n)]
+        print(" ".join(line))
+
+# --- User Input Section ---
+try:
+    N = int(input("Enter the number of queens (N): "))
+    if N < 1:
+        print("Please enter a positive integer.")
+    else:
+        # board[i] = j means queen at row i is in column j
+        initial_board = [-1] * N
+        all_solutions = []
+        solve_n_queens(0, N, initial_board, all_solutions)
+        print_board(all_solutions, N)
+except ValueError:
+    print("Invalid input. Please enter an integer.")
